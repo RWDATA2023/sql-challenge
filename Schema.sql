@@ -1,82 +1,63 @@
-BEGIN;
-
-
-CREATE TABLE IF NOT EXISTS public.departments
-(
-    dept_no character varying(4) COLLATE pg_catalog."default" NOT NULL,
-    dept_name character varying(30) COLLATE pg_catalog."default",
-    CONSTRAINT departments_pkey PRIMARY KEY (dept_no)
+CREATE TABLE "departments" (
+    "dept_no" VARCHAR   NOT NULL,
+    "dept_name" VARCHAR   NOT NULL,
+    CONSTRAINT "pk_departments" PRIMARY KEY (
+        "dept_no"
+     )
 );
 
-CREATE TABLE IF NOT EXISTS public.dept_emp
-(
-    emp_no integer,
-    dept_no character varying(4) COLLATE pg_catalog."default"
+CREATE TABLE "department_employees" (
+    "emp_no" INTEGER   NOT NULL,
+    "dept_no" VARCHAR   NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS public.dept_manager
-(
-    dept_no character varying(4) COLLATE pg_catalog."default",
-    emp_no integer
+CREATE TABLE "department_manager" (
+    "dept_no" VARCHAR   NOT NULL,
+    "emp_no" INTEGER   NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS public.employees
-(
-    emp_no integer NOT NULL,
-    emp_title_id character varying(6) COLLATE pg_catalog."default",
-    birth_date date,
-    first_name character varying(14) COLLATE pg_catalog."default",
-    last_name character varying(16) COLLATE pg_catalog."default",
-    sex character(1) COLLATE pg_catalog."default",
-    hire_date date,
-    CONSTRAINT employees_pkey PRIMARY KEY (emp_no)
+CREATE TABLE "employees" (
+    "emp_no" INTEGER   NOT NULL,
+    "emp_title_id" VARCHAR   NOT NULL,
+    "birth_date" DATE   NOT NULL,
+    "first_name" VARCHAR   NOT NULL,
+    "last_name" VARCHAR   NOT NULL,
+    "sex" VARCHAR   NOT NULL,
+    "hire_date" DATE   NOT NULL,
+    CONSTRAINT "pk_employees" PRIMARY KEY (
+        "emp_no"
+     )
 );
 
-CREATE TABLE IF NOT EXISTS public.salaries
-(
-    emp_no integer,
-    salary integer
+CREATE TABLE "salaries" (
+    "emp_no" INTEGER   NOT NULL,
+    "salary" INTEGER   NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS public.titles
-(
-    title_id character varying(6) COLLATE pg_catalog."default" NOT NULL,
-    title character varying(20) COLLATE pg_catalog."default",
-    CONSTRAINT titles_pkey PRIMARY KEY (title_id)
+CREATE TABLE "titles" (
+    "title_id" VARCHAR   NOT NULL,
+    "title" VARCHAR   NOT NULL,
+    CONSTRAINT "pk_titles" PRIMARY KEY (
+        "title_id"
+     )
 );
 
-ALTER TABLE IF EXISTS public.dept_emp
-    ADD CONSTRAINT dept_emp_dept_no_fkey FOREIGN KEY (dept_no)
-    REFERENCES public.departments (dept_no) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION;
+ALTER TABLE "department_employees" ADD CONSTRAINT "fk_department_employees_emp_no" FOREIGN KEY("emp_no")
+REFERENCES "employees" ("emp_no");
 
+ALTER TABLE "department_employees" ADD CONSTRAINT "fk_department_employees_dept_no" FOREIGN KEY("dept_no")
+REFERENCES "departments" ("dept_no");
 
-ALTER TABLE IF EXISTS public.dept_emp
-    ADD CONSTRAINT dept_emp_emp_no_fkey FOREIGN KEY (emp_no)
-    REFERENCES public.employees (emp_no) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION;
+ALTER TABLE "department_manager" ADD CONSTRAINT "fk_department_manager_dept_no" FOREIGN KEY("dept_no")
+REFERENCES "departments" ("dept_no");
 
+ALTER TABLE "department_manager" ADD CONSTRAINT "fk_department_manager_emp_no" FOREIGN KEY("emp_no")
+REFERENCES "employees" ("emp_no");
 
-ALTER TABLE IF EXISTS public.dept_manager
-    ADD CONSTRAINT dept_manager_dept_no_fkey FOREIGN KEY (dept_no)
-    REFERENCES public.departments (dept_no) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION;
+ALTER TABLE "employees" ADD CONSTRAINT "fk_employees_emp_title_id" FOREIGN KEY("emp_title_id")
+REFERENCES "titles" ("title_id");
 
+ALTER TABLE "salaries" ADD CONSTRAINT "fk_salaries_emp_no" FOREIGN KEY("emp_no")
+REFERENCES "employees" ("emp_no");
 
-ALTER TABLE IF EXISTS public.dept_manager
-    ADD CONSTRAINT dept_manager_emp_no_fkey FOREIGN KEY (emp_no)
-    REFERENCES public.employees (emp_no) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION;
-
-
-ALTER TABLE IF EXISTS public.salaries
-    ADD CONSTRAINT salaries_emp_no_fkey FOREIGN KEY (emp_no)
-    REFERENCES public.employees (emp_no) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION;
-
-END;
+ALTER DATABASE employees_db SET datestyle TO "ISO, MDY";
